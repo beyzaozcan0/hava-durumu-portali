@@ -1,100 +1,40 @@
 import React, { useState } from 'react';
-import {
-  WiDaySunny,
-  WiCloudy,
-  WiRain,
-  WiSnow,
-  WiStrongWind,
-} from 'react-icons/wi';
-
-// Şehir listesi
-const cities = [
-  'İstanbul', 'Ankara', 'İzmir', 'Antalya', 'Bursa',
-  'Adana', 'Trabzon', 'Eskişehir', 'Konya', 'Gaziantep',
-  'Kayseri', 'Samsun', 'Mersin', 'Denizli', 'Malatya'
-];
-
-// Hava durumu tipleri, ikonları ve detayları
-const weatherTypes = [
-  {
-    type: 'Güneşli',
-    icon: <WiDaySunny size={36} color="#FFA726" />,
-    description: 'Açık ve güneşli hava, sıcaklık yüksek.',
-    humidity: 'Düşük nem',
-    wind: 'Hafif rüzgar',
-  },
-  {
-    type: 'Bulutlu',
-    icon: <WiCloudy size={36} color="#90A4AE" />,
-    description: 'Hafif bulutlu, ara sıra güneş görünebilir.',
-    humidity: 'Orta nem',
-    wind: 'Orta şiddette rüzgar',
-  },
-  {
-    type: 'Yağmurlu',
-    icon: <WiRain size={36} color="#4FC3F7" />,
-    description: 'Yağmur var, dışarı çıkarken şemsiye almayı unutma.',
-    humidity: 'Yüksek nem',
-    wind: 'Sert rüzgar',
-  },
-  {
-    type: 'Karlı',
-    icon: <WiSnow size={36} color="#81D4FA" />,
-    description: 'Kar yağışı, yollar kaygan olabilir.',
-    humidity: 'Orta nem',
-    wind: 'Hafif rüzgar',
-  },
-  {
-    type: 'Rüzgarlı',
-    icon: <WiStrongWind size={36} color="#A1887F" />,
-    description: 'Rüzgar yoğun, dışarıda dikkatli olun.',
-    humidity: 'Düşük nem',
-    wind: 'Güçlü rüzgar',
-  },
-];
-
-// Rastgele sıcaklık üret (0-40 derece arası)
-const getRandomTemperature = () => Math.floor(Math.random() * 41);
 
 function App() {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [city, setCity] = useState('');
+  const [weather, setWeather] = useState(null);
+  const [error, setError] = useState('');
 
-  // Şehirlere hava durumu ve detaylar ata (useMemo ile yalnızca 1 kere oluştur)
-  const cityWeatherMap = React.useMemo(() => {
-    const map = {};
-    cities.forEach(city => {
-      const weather = weatherTypes[Math.floor(Math.random() * weatherTypes.length)];
-      const temperature = getRandomTemperature();
-      map[city] = { ...weather, temperature };
-    });
-    return map;
-  }, []);
+  const getWeather = async () => {
+    if (!city.trim()) return;
 
-  const filteredCities = (searchTerm.trim() === ''
-  ? cities
-  : cities.filter(city =>
-      city.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-).sort((a, b) => a.localeCompare(b, 'tr'));
+    try {
+      const response = await fetch(`http://localhost:5000/weather?city=${encodeURIComponent(city)}`);
+      const data = await response.json();
 
+      if (response.ok) {
+        setWeather(data);
+        setError('');
+      } else {
+        setWeather(null);
+        setError(data.error || 'Veri alınamadı');
+      }
+    } catch (err) {
+      setError('Sunucuya ulaşılamadı');
+      setWeather(null);
+    }
+  };
 
   return (
-    <div style={{
-      padding: '40px',
-      fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-      backgroundColor: '#E0F7F4',
-      minHeight: '100vh',
-    }}>
-      <h2 style={{ color: '#2E7D32', marginBottom: '30px', textAlign: 'center' }}>
-        🌤️ Hava Durumu Portalı
-      </h2>
+    <div style={{ padding: '40px', fontFamily: "'Segoe UI', sans-serif", backgroundColor: '#E0F7F4', minHeight: '100vh' }}>
+      <h2 style={{ color: '#2E7D32', marginBottom: '30px', textAlign: 'center' }}>🌤️ Hava Durumu Portalı</h2>
 
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '35px' }}>
         <input
           type="text"
-          placeholder="Şehir ara..."
-          value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
+          placeholder="Şehir girin..."
+          value={city}
+          onChange={e => setCity(e.target.value)}
           style={{
             padding: '14px',
             width: '320px',
@@ -105,51 +45,38 @@ function App() {
             outline: 'none',
           }}
         />
+        <button onClick={getWeather} style={{
+          marginLeft: '10px',
+          padding: '14px 20px',
+          fontSize: '16px',
+          backgroundColor: '#2E7D32',
+          color: 'white',
+          border: 'none',
+          borderRadius: '10px',
+          cursor: 'pointer',
+        }}>
+          Getir
+        </button>
       </div>
 
-      <ul style={{ listStyleType: 'none', padding: 0, maxWidth: '600px', margin: 'auto' }}>
-        {filteredCities.map(city => {
-          const weather = cityWeatherMap[city];
-          return (
-            <li key={city} style={{
-              marginBottom: '18px',
-              padding: '20px 30px',
-              borderRadius: '15px',
-              backgroundColor: '#fff',
-              boxShadow: '0 5px 15px rgba(0,0,0,0.1)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              maxWidth: '600px',
-              transition: 'transform 0.2s ease',
-              cursor: 'default',
-            }}
-              onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.03)'}
-              onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-            >
-              <div style={{ flex: 3 }}>
-                <h3 style={{ margin: '0 0 8px 0', color: '#2A3B47', fontWeight: '700', fontSize: '22px' }}>
-                  {city}
-                </h3>
-                <p style={{ margin: '0 0 5px 0', fontSize: '16px', color: '#555' }}>
-                  {weather.description}
-                </p>
-                <p style={{ margin: '0', fontSize: '14px', color: '#777' }}>
-                  Nem: {weather.humidity} &nbsp;|&nbsp; Rüzgar: {weather.wind}
-                </p>
-              </div>
+      {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
 
-              <div style={{ flex: 1, textAlign: 'right', color: '#2E7D32', fontWeight: '700', fontSize: '24px' }}>
-                {weather.temperature}°C
-              </div>
-
-              <div style={{ flex: 0.5, marginLeft: '20px' }}>
-                {weather.icon}
-              </div>
-            </li>
-          );
-        })}
-      </ul>
+      {weather && (
+        <div style={{
+          maxWidth: '600px',
+          margin: 'auto',
+          padding: '30px',
+          backgroundColor: '#fff',
+          borderRadius: '15px',
+          boxShadow: '0 5px 15px rgba(0,0,0,0.1)',
+          textAlign: 'center'
+        }}>
+          <h3 style={{ color: '#2A3B47', fontSize: '24px' }}>{city}</h3>
+          <p style={{ fontSize: '18px' }}>🌡️ Sıcaklık: {weather.temperature}°C</p>
+          <p style={{ fontSize: '18px' }}>💧 Nem: {weather.humidity}%</p>
+          <p style={{ fontSize: '18px' }}>🌥️ Hava: {weather.description}</p>
+        </div>
+      )}
     </div>
   );
 }
