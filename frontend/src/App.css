@@ -1,79 +1,249 @@
+/* Temel ayarlar */
 body {
   margin: 0;
   padding: 0;
-  background: #e0f7fa;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: 'Poppins', sans-serif;
+  background-color: #e0f7fa;
 }
 
-.container {
+.app-container {
+  position: relative;
+  min-height: 100vh;
+  padding: 40px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 80px;
+  color: #fff;
+  overflow: hidden;
+  z-index: 0;
 }
 
+/* Başlık */
 .title {
-  color: #00796b;
-  margin-bottom: 20px;
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 40px;
+  text-align: center;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+  animation: titleFadeScale 0.8s ease forwards;
 }
 
+/* Arama kutusu */
 .search-box {
   display: flex;
   gap: 10px;
-  margin-bottom: 30px;
+  max-width: 400px;
+  width: 100%;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+.search-box input,
+.search-box button {
+  font-size: 1.1rem;
+  padding: 15px 20px;
+  border-radius: 30px;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
 }
 
 .search-box input {
-  padding: 10px;
-  width: 200px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  flex: 1;
+  outline: none;
+  background-color: #ffffffd4;
+  color: #000;
+}
+
+.search-box input:focus {
+  box-shadow: 0 0 10px #406db2;
+  border: 2px solid #133b76;
 }
 
 .search-box button {
-  padding: 10px 20px;
-  background-color: #00796b;
+  background-color: #0d48a199;
   color: white;
-  border: none;
-  border-radius: 8px;
+  font-weight: 600;
   cursor: pointer;
+  padding: 15px 25px;
 }
 
 .search-box button:hover {
-  background-color: #004d40;
+  background-color: #3260b6;
+  transform: scale(1.05);
 }
 
-.weather-card {
-  background-color: white;
-  padding: 20px 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  text-align: center;
-}
-
+/* Hata mesajı */
 .error {
-  color: red;
-  font-weight: bold;
-}
-
-.city-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  max-width: 600px;
-  justify-content: center;
+  color: #ff4d4d;
+  font-weight: 600;
   margin-bottom: 20px;
+  font-size: 1.1rem;
+  z-index: 1;
 }
 
-.city-item {
-  background-color: #ffffff;
-  padding: 10px 15px;
+/* Hava durumu kartı */
+.weather-card {
+  position: relative;
+  background-color: rgba(255, 255, 255, 0.842);
+  max-width: 450px;
+  width: 100%;
+  border-radius: 20px;
+  padding: 35px 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  color: #1a2a47;
+  z-index: 1;
+}
+
+.weather-card h2 {
+  font-size: 2.5rem;
+  margin-bottom: 25px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+/* Hava bilgileri */
+.weather-info-row {
+  display: flex;
+  justify-content: space-around;
+  gap: 20px;
+  font-size: 1.3rem;
+  flex-wrap: wrap;
+}
+
+.weather-info-item {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  /* İkon ve metin hizalaması */
+  justify-content: center;
+  text-align: center;
+  min-width: 100px;
+}
+
+/* Favori butonu */
+.favorite-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 2.2rem;
+  color: #edb11b;
+  transition: color 0.3s ease;
+  z-index: 2;
+}
+
+.favorite-btn:hover,
+.favorite-btn.active {
+  color: #f1c84a;
+}
+
+/* Favorilerim sabit buton */
+.favorites-toggle-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #ffd9008d;
+  color: white;
+  border: none;
+  padding: 16px 28px;
+  border-radius: 50px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.3s ease-in-out, transform 0.25s ease-in-out;
+}
+
+.favorites-toggle-btn:hover {
+  background-color: #ddbd05;
+  transform: scale(1.05);
+}
+
+/* Favoriler paneli */
+.favorites-panel {
+  position: fixed;
+  top: 70px;
+  right: 20px;
+  width: 260px;
+  max-height: 80vh;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.96);
+  color: #1a2a47;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  z-index: 999;
+}
+
+.favorites-panel h3 {
+  margin-top: 0;
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+}
+
+.favorite-item {
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: #e0f7fa;
   border-radius: 8px;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  transition: background 0.3s ease;
+  transition: background-color 0.3s;
+  justify-content: space-between;
 }
 
-.city-item:hover {
-  background-color: #b2dfdb;
+.favorite-item:hover {
+  background-color: #b2ebf2;
+}
+
+/* Animasyonlar */
+@keyframes titleFadeScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .title {
+    font-size: 2rem;
+  }
+
+  .search-box {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .search-box input,
+  .search-box button {
+    width: 100%;
+    font-size: 1.2rem;
+  }
+
+  .weather-info-row {
+    display: flex;
+    justify-content: space-around;
+    align-items: stretch;
+    font-size: 1.2rem;
+    gap: 20px;
+  }
+
+  .weather-info-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+  }
 }

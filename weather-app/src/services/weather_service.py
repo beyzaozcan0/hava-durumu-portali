@@ -10,9 +10,25 @@ class WeatherService:
             raise Exception("Error fetching weather data")
 
     def parse_weather(self, data):
+        # İngilizce açıklamaların Türkçe karşılıkları
+        desc_tr = {
+            "clear sky": "Açık",
+            "few clouds": "Az bulutlu",
+            "scattered clouds": "Dağınık bulutlu",
+            "broken clouds": "Parçalı bulutlu",
+            "shower rain": "Sağanak yağış",
+            "rain": "Yağmur",
+            "thunderstorm": "Fırtına",
+            "snow": "Kar",
+            "mist": "Sis"
+        }
+
+        desc_en = data["weather"][0]["description"].lower()
+        desc_turkish = desc_tr.get(desc_en, desc_en)  # Bulamazsa İngilizce bırak
+
         weather_info = {
             "temperature": data["main"]["temp"],
             "humidity": data["main"]["humidity"],
-            "description": data["weather"][0]["description"]
+            "description": desc_turkish
         }
         return weather_info
