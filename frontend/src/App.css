@@ -18,6 +18,15 @@ body {
   z-index: 0;
 }
 
+/* Arka plan */
+.background-layer {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: url('./assets/day.jpg') center/cover no-repeat;
+  filter: brightness(0.4);
+  z-index: -1;
+}
+
 /* Başlık */
 .title {
   font-size: 3rem;
@@ -94,6 +103,18 @@ body {
   text-align: center;
   color: #1a2a47;
   z-index: 1;
+
+  /* animasyonlar */
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+.weather-card.fade-out {
+  opacity: 0;
+}
+
+.weather-card.fade-in {
+  opacity: 1;
 }
 
 .weather-card h2 {
@@ -116,10 +137,6 @@ body {
   display: flex;
   align-items: center;
   flex-direction: column;
-  /* İkon ve metin hizalaması */
-  justify-content: center;
-  text-align: center;
-  min-width: 100px;
 }
 
 /* Favori butonu */

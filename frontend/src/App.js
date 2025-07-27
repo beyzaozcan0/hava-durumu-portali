@@ -138,7 +138,7 @@ function App() {
             if (e.key === "Enter") getWeather();
           }}
         />
-        <button onClick={() => getWeather()}>Getir</button>
+        <button onClick={() => getWeather()}>Bul</button>
       </div>
 
       <button
